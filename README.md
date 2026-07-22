@@ -2296,3 +2296,239 @@ int main(){
     }
 }
 ```
+- [Iskander and Drawings](https://codeforces.com/contest/2244/problem/A)
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        int n;
+        cin >>n;
+        string s;
+        cin >> s;
+
+        int maxi = 0;
+        int len = 0;
+        for (int i=0; i<n; i++){
+            if ((i==0) && (s[i] == '#')) len = 1;
+            else if (s[i] == '#') len++;
+            else len = 0;
+
+            maxi = max(maxi, len);
+        }
+
+        cout << (maxi+1)/2 << "\n";
+    }
+}
+```
+- [Nikita and Books](https://codeforces.com/contest/2244/problem/B)
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        long long n;
+        cin >> n;
+        long long a[n];
+        for (long long i=0; i<n; i++) cin >> a[i];
+
+        long long sum[n];
+        sum[0] = a[0];
+        for (long long i=1; i<n; i++){
+            sum[i] = a[i] + sum[i-1];
+        }
+
+        bool works = true;
+        for (long long i=0; i<n; i++){
+            if (sum[i] < ((i+1) * (i+2))/2){
+                works = false;
+                break;
+            }
+        }
+
+        if (works == true) cout << "YES" << "\n";
+        else cout << "NO" << "\n";
+    }
+}
+```
+- [Stepan and Permutation](https://codeforces.com/contest/2244/problem/C)
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        int n, x, y;
+        cin >> n >> x >> y;
+
+        int p[n+1];
+        for (int i=1; i<=n; i++) cin >> p[i];
+
+        vector<vector<int>> adj(n+1);
+        for (int i=1; i<=n-x; i++){
+            adj[i].push_back(i+x);
+            adj[i+x].push_back(i);
+        }
+
+        for (int i=1; i<=n-y; i++){
+            adj[i].push_back(i+y);
+            adj[i+y].push_back(i);
+        }
+
+        int comp[n+1];
+        for (int i=0; i<=n; i++) comp[i] = 0;
+
+        int num = 0;
+
+        for (int i=1; i<=n; i++){
+            if (comp[i] != 0) continue;
+            num++;
+            queue<int> q;
+            q.push(i);
+            comp[i] = num;
+
+            while (q.empty() == false){
+                int x = q.front();
+                q.pop();
+
+                for (int y: adj[x]){
+                    if (comp[y] == 0){
+                        comp[y] = num;
+                        q.push(y);
+                    }
+                }
+            }
+        }
+
+        bool works = true;
+        for (int i=1; i<=n; i++){
+            if (comp[i] != comp[p[i]]){
+                works = false;
+                break;
+            }
+        }
+        
+        if (works == true) cout << "YES" << "\n";
+        else cout << "NO" << "\n";
+    }
+}
+```
+- [Yaroslav and Productivity](https://codeforces.com/contest/2244/problem/D)
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+    while (t--){
+        int n, m;
+        cin >> n >> m;
+
+        vector<long long> a(n+1);
+        for (int i = 1; i <= n; i++) cin >> a[i];
+        vector<long long> b(m+1);
+        for (int i = 1; i <= m; i++) cin >> b[i];
+
+        vector<int> avail(n+1, 0);
+        for (int i = 1; i <= m; i++) avail[b[i]] = 1;
+
+        vector<array<long long,2>> dp(n+2);
+        dp[n+1][0] = 0;
+        dp[n+1][1] = -1e15;
+
+        for (int i = n; i >= 1; i--){
+            if (avail[i] == 0){
+                dp[i][0] = a[i] + dp[i+1][0];
+                dp[i][1] = -a[i] + dp[i+1][1];
+            }
+            else{
+                long long best = max(dp[i+1][0], dp[i+1][1]);
+                dp[i][0] = a[i] + best;
+                dp[i][1] = -a[i] + best;
+            }
+        }
+
+        cout << max(dp[1][0], dp[1][1]) << "\n";
+    }
+}
+```
+- [Masha and the Garland](https://codeforces.com/contest/2244/problem/E)
+```
+#include <bits/stdc++.h>
+using namespace std;
+
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    int t;
+    cin >> t;
+
+    while (t--) {
+        int n, q;
+        cin >> n >> q;
+
+        char s[n+1];
+        for (int i=1; i<=n; i++) cin >> s[i];
+
+        int bad0[n + 1], bad1[n + 1];
+        int pref0[n + 1], pref1[n + 1];
+        int block0[n + 1], block1[n + 1];
+
+        pref0[0] = pref1[0] = 0;
+        block0[0] = block1[0] = 0;
+        bad0[0] = bad1[0] = 0;
+
+        for (int i = 1; i <= n; i++) {
+
+            char c0, c1;
+            if (i%2 == 0){
+                c0 = '0';
+                c1 = '1';
+            }
+            else{
+                c0 = '1';
+                c1 = '0';
+            }
+
+            if (s[i] != c0) bad0[i] = 1;
+            else bad0[i] = 0;
+            if (s[i] != c1) bad1[i] = 1;
+            else bad1[i] = 0;
+
+            pref0[i] = pref0[i - 1] + bad0[i];
+            pref1[i] = pref1[i - 1] + bad1[i];
+
+            block0[i] = block0[i - 1];
+            if (bad0[i]==1 && bad0[i - 1]==0) block0[i]++;
+
+            block1[i] = block1[i - 1];
+            if (bad1[i]==1 && bad1[i - 1]==0) block1[i]++;
+        }
+
+        while (q--) {
+
+            int l, r, k;
+            cin >> l >> r >> k;
+
+            int b0 = block0[r] - block0[l - 1];
+            if (l > 1 && bad0[l] && bad0[l - 1]) b0++;
+
+            int b1 = block1[r] - block1[l - 1];
+            if (l > 1 && bad1[l] && bad1[l - 1]) b1++;
+
+            if (min(b0, b1) <= k) cout << "YES\n";
+            else cout << "NO\n";
+        }
+    }
+}
+```
