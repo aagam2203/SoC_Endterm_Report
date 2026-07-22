@@ -5,7 +5,7 @@ Here are my IDs for different websites from which I have practiced CP questions:
 2. leetcode: aagam22
 3. CSES: aagam22
 
-I have studied theory from chapters 1-8 of the [CP Handbook](https://cses.fi/book/book.pdf) provided.
+I have studied theory from chapters 1-20 of the [CP Handbook](https://cses.fi/book/book.pdf) provided.
 
 ## Problems and Solutions
 
@@ -508,6 +508,364 @@ int main(){
     cout << max(time1, time2);
 }
 ```
+### DP
+- [Dice Combinations](https://cses.fi/problemset/task/1633)
+```
+#include <iostream>
+using namespace std;
+
+int main(){
+    int n;
+    cin >> n;
+
+    const int mod = 1000000007;
+
+    long long dp[n+1];
+    dp[0] = 1;
+
+    for(int i=1; i<=n; i++){
+        dp[i] = 0;
+        for(int j=1; j<=6; j++){
+            if(i-j >= 0){
+                dp[i] += dp[i-j];
+                dp[i] %= mod;
+            }
+        }
+    }
+
+    cout << dp[n];
+}
+```
+- [Minimizing Coins](https://cses.fi/problemset/task/1634)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int n, x;
+    cin >> n >> x;
+
+    int coin[n];
+    for(int i=0; i<n; i++){
+        cin >> coin[i];
+    }
+
+    int dp[x+1];
+
+    dp[0] = 0;
+    for(int i=1; i<=x; i++){
+        dp[i] = 1000000000;
+    }
+
+    for(int i=1; i<=x; i++){
+        for(int j=0; j<n; j++){
+            if(i >= coin[j]){
+                dp[i] = min(dp[i], dp[i-coin[j]]+1);
+            }
+        }
+    }
+
+    if(dp[x] == 1000000000){
+        cout << -1;
+    }
+    else{
+        cout << dp[x];
+    }
+}
+```
+- [Coin Combinations I](https://cses.fi/problemset/task/1635)
+```
+#include <iostream>
+using namespace std;
+
+int main(){
+    int n, x;
+    cin >> n >> x;
+
+    int coin[n];
+    for(int i=0; i<n; i++){
+        cin >> coin[i];
+    }
+
+    const int mod = 1000000007;
+
+    long long dp[x+1];
+    dp[0] = 1;
+
+    for(int i=1; i<=x; i++){
+        dp[i] = 0;
+        for(int j=0; j<n; j++){
+            if(i >= coin[j]){
+                dp[i] += dp[i-coin[j]];
+                dp[i] %= mod;
+            }
+        }
+    }
+
+    cout << dp[x];
+}
+```
+- [Coin Combinations II](https://cses.fi/problemset/task/1636)
+```
+#include <iostream>
+using namespace std;
+
+int main(){
+    int n, x;
+    cin >> n >> x;
+
+    int coin[n];
+    for(int i=0; i<n; i++){
+        cin >> coin[i];
+    }
+
+    const int mod = 1000000007;
+
+    int dp[x+1];
+
+    dp[0] = 1;
+    for(int i=1; i<=x; i++){
+        dp[i] = 0;
+    }
+
+    for(int i=0; i<n; i++){
+        for(int j=coin[i]; j<=x; j++){
+            dp[j] += dp[j-coin[i]];
+            dp[j] %= mod;
+        }
+    }
+
+    cout << dp[x];
+}
+```
+- [Removing Digits](https://cses.fi/problemset/task/1637)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int n;
+    cin >> n;
+
+    int dp[n+1];
+
+    dp[0] = 0;
+
+    for(int i=1; i<=n; i++){
+        dp[i] = 1000000000;
+
+        int x = i;
+        while(x){
+            int d = x%10;
+            if(d){
+                dp[i] = min(dp[i], dp[i-d]+1);
+            }
+            x /= 10;
+        }
+    }
+
+    cout << dp[n];
+}
+```
+- [Grid Paths](https://cses.fi/problemset/task/1638)
+```
+#include <iostream>
+using namespace std;
+
+int main(){
+    int n;
+    cin >> n;
+
+    const int mod = 1000000007;
+
+    char grid[n][n];
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            cin >> grid[i][j];
+        }
+    }
+
+    int dp[n][n];
+
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            dp[i][j] = 0;
+        }
+    }
+
+    if(grid[0][0] == '.'){
+        dp[0][0] = 1;
+    }
+
+    for(int i=0; i<n; i++){
+        for(int j=0; j<n; j++){
+            if(grid[i][j] == '*'){
+                continue;
+            }
+
+            if(i){
+                dp[i][j] += dp[i-1][j];
+                dp[i][j] %= mod;
+            }
+
+            if(j){
+                dp[i][j] += dp[i][j-1];
+                dp[i][j] %= mod;
+            }
+        }
+    }
+
+    cout << dp[n-1][n-1];
+}
+```
+- [Book Shop](https://cses.fi/problemset/task/1158)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int n, x;
+    cin >> n >> x;
+
+    int price[n], pages[n];
+
+    for(int i=0; i<n; i++){
+        cin >> price[i];
+    }
+
+    for(int i=0; i<n; i++){
+        cin >> pages[i];
+    }
+
+    int dp[x+1];
+
+    for(int i=0; i<=x; i++){
+        dp[i] = 0;
+    }
+
+    for(int i=0; i<n; i++){
+        for(int j=x; j>=price[i]; j--){
+            dp[j] = max(dp[j], dp[j-price[i]]+pages[i]);
+        }
+    }
+
+    cout << dp[x];
+}
+```
+- [Edit Distance](https://cses.fi/problemset/task/1639)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    string a, b;
+    cin >> a >> b;
+
+    int n = a.size();
+    int m = b.size();
+
+    int dp[n+1][m+1];
+
+    for(int i=0; i<=n; i++){
+        dp[i][0] = i;
+    }
+
+    for(int j=0; j<=m; j++){
+        dp[0][j] = j;
+    }
+
+    for(int i=1; i<=n; i++){
+        for(int j=1; j<=m; j++){
+            dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1);
+            dp[i][j] = min(dp[i][j], dp[i-1][j-1]+(a[i-1]!=b[j-1]));
+        }
+    }
+
+    cout << dp[n][m];
+}
+```
+- [Increasing Subsequence](https://cses.fi/problemset/task/1145)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int n;
+    cin >> n;
+
+    int a[n];
+    int dp[n];
+    int len = 0;
+
+    for(int i=0; i<n; i++){
+        cin >> a[i];
+
+        int pos = lower_bound(dp, dp+len, a[i]) - dp;
+        dp[pos] = a[i];
+
+        if(pos == len){
+            len++;
+        }
+    }
+
+    cout << len;
+}
+```
+- [Projects](https://cses.fi/problemset/task/1140)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int n;
+    cin >> n;
+
+    long long a[n], b[n], p[n];
+
+    for(int i=0; i<n; i++){
+        cin >> a[i] >> b[i] >> p[i];
+    }
+
+    int ind[n];
+    for(int i=0; i<n; i++){
+        ind[i] = i;
+    }
+
+    sort(ind, ind+n, [&](int x, int y){
+        return b[x] < b[y];
+    });
+
+    long long dp[n+1];
+    dp[0] = 0;
+
+    for(int i=1; i<=n; i++){
+        int l = 0, r = i-2;
+        int pos = -1;
+
+        while(l <= r){
+            int mid = (l+r)/2;
+            if(b[ind[mid]] < a[ind[i-1]]){
+                pos = mid;
+                l = mid+1;
+            }
+            else{
+                r = mid-1;
+            }
+        }
+
+        dp[i] = max(dp[i-1], p[ind[i-1]] + dp[pos+1]);
+    }
+
+    cout << dp[n];
+}
+```
+
 
 ### Codeforces
 - [Interesting Drink](https://codeforces.com/problemset/problem/706/B)
@@ -700,6 +1058,228 @@ int main(){
         ans += a[i] * freq[i];
     }
     cout << ans;
+}
+```
+- [Sponsor of Your Problems](https://codeforces.com/problemset/problem/2121/E)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+
+    while(t--){
+        string l, r;
+        cin >> l >> r;
+
+        int n = l.size();
+
+        const int inf = 1000000000;
+
+        int dp[11][2][2];
+
+        for(int i=0; i<=n; i++){
+            for(int j=0; j<2; j++){
+                for(int k=0; k<2; k++){
+                    dp[i][j][k] = inf;
+                }
+            }
+        }
+
+        dp[0][1][1] = 0;
+
+        for(int i=0; i<n; i++){
+            for(int a=0; a<2; a++){
+                for(int b=0; b<2; b++){
+                    if(dp[i][a][b] == inf){
+                        continue;
+                    }
+
+                    int lo = a ? l[i]-'0' : 0;
+                    int hi = b ? r[i]-'0' : 9;
+
+                    for(int d=lo; d<=hi; d++){
+                        int na = a && (d==lo);
+                        int nb = b && (d==hi);
+
+                        dp[i+1][na][nb] = min(dp[i+1][na][nb],
+                                             dp[i][a][b] + (d==l[i]-'0') + (d==r[i]-'0'));
+                    }
+                }
+            }
+        }
+
+        int ans = inf;
+        for(int i=0; i<2; i++){
+            for(int j=0; j<2; j++){
+                ans = min(ans, dp[n][i][j]);
+            }
+        }
+
+        cout << ans << "\n";
+    }
+}
+```
+- [Gellyfish and Flaming Peony](https://codeforces.com/problemset/problem/2115/A)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int gcd(int a, int b){
+    while(b){
+        int t = a%b;
+        a = b;
+        b = t;
+    }
+    return a;
+}
+
+int main(){
+    int t;
+    cin >> t;
+
+    while(t--){
+        int n;
+        cin >> n;
+
+        int a[n];
+        int g = 0;
+
+        for(int i=0; i<n; i++){
+            cin >> a[i];
+            if(i == 0){
+                g = a[i];
+            }
+            else{
+                g = gcd(g, a[i]);
+            }
+        }
+
+        int cnt = 0;
+        for(int i=0; i<n; i++){
+            if(a[i] == g){
+                cnt++;
+            }
+        }
+
+        if(cnt){
+            cout << n-cnt << "\n";
+            continue;
+        }
+
+        const int inf = 1000000000;
+
+        int dp[5001];
+        for(int i=0; i<=5000; i++){
+            dp[i] = inf;
+        }
+
+        for(int i=0; i<n; i++){
+            int ndp[5001];
+            for(int j=0; j<=5000; j++){
+                ndp[j] = dp[j];
+            }
+
+            ndp[a[i]] = 1;
+
+            for(int j=1; j<=5000; j++){
+                if(dp[j] == inf){
+                    continue;
+                }
+                int x = gcd(j, a[i]);
+                ndp[x] = min(ndp[x], dp[j]+1);
+            }
+
+            for(int j=0; j<=5000; j++){
+                dp[j] = ndp[j];
+            }
+        }
+
+        cout << dp[g]-1+n-1 << "\n";
+    }
+}
+```
+- [Test of Love](https://codeforces.com/problemset/problem/1992/D)
+```
+#include <iostream>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+
+    while(t--){
+        int n, m, k;
+        cin >> n >> m >> k;
+
+        string s;
+        cin >> s;
+
+        int dp[n+2];
+
+        for(int i=0; i<=n+1; i++){
+            dp[i] = -1;
+        }
+
+        dp[0] = k;
+
+        for(int i=1; i<=n+1; i++){
+            if(i != n+1 && s[i-1] == 'C'){
+                continue;
+            }
+
+            for(int j=1; j<=m; j++){
+                if(i-j >= 0 && (i-j == 0 || s[i-j-1] == 'L')){
+                    dp[i] = max(dp[i], dp[i-j]);
+                }
+            }
+
+            if(i > 1 && s[i-2] == 'W'){
+                dp[i] = max(dp[i], dp[i-1]-1);
+            }
+        }
+
+        if(dp[n+1] >= 0){
+            cout << "YES\n";
+        }
+        else{
+            cout << "NO\n";
+        }
+    }
+}
+```
+- [Magnitude (Easy Version)](https://codeforces.com/problemset/problem/1984/C1)
+```
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+int main(){
+    int t;
+    cin >> t;
+
+    while(t--){
+        int n;
+        cin >> n;
+
+        long long mn = 0, mx = 0;
+
+        for(int i=0; i<n; i++){
+            long long x;
+            cin >> x;
+
+            long long a = mn + x;
+            long long b = mx + x;
+
+            mn = min(a, abs(b));
+            mx = max(abs(a), abs(b));
+        }
+
+        cout << mx << "\n";
+    }
 }
 ```
 
