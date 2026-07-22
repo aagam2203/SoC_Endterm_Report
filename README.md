@@ -1,4 +1,4 @@
-# SoC Midterm Report
+# SoC Endterm Report
 
 Here are my IDs for different websites from which I have practiced CP questions:
 1. Codeforces: aagam22
